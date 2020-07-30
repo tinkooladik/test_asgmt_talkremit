@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import '../models/LoginRequest.dart';
+import '../services/api_service.dart';
+
 class LoginPage extends StatefulWidget {
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -52,10 +55,13 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _login() {
-    Scaffold.of(context).showSnackBar(SnackBar(
-      content: Text(
-          "email: ${_emailController.text}, pass: ${_passwordController.text}"),
-    ));
+    ApiService.login(LoginRequest(
+            email: _emailController.text, password: _passwordController.text))
+        .then((result) {
+      Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text(result ? "Login success" : "Something went wrong"),
+      ));
+    });
   }
 
   void _validateEmail(String email) {
