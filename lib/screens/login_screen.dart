@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../models/LoginRequest.dart';
+import '../models/User.dart';
 import '../services/api_service.dart';
 
 class LoginPage extends StatefulWidget {
@@ -14,6 +15,8 @@ class _LoginPageState extends State<LoginPage> {
 
   bool _isEmailValid = false;
   bool _isPasswordValid = false;
+
+  Future<UserResponse> _futureLogin;
 
   @override
   Widget build(BuildContext context) {
@@ -41,26 +44,51 @@ class _LoginPageState extends State<LoginPage> {
           ),
           Container(
             margin: EdgeInsets.only(top: 16),
-            child: FlatButton(
-              color: Colors.green,
-              textColor: Colors.limeAccent,
-              disabledColor: Colors.green[100],
-              child: Text("Login"),
-              onPressed: _isEmailValid && _isPasswordValid ? _login : null,
-            ),
+            child: (_futureLogin == null)
+                ? loginButton()
+                : FutureBuilder<UserResponse>(
+                    future: _futureLogin,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        if (snapshot.hasData) {
+                          return Text(
+                              "Hi, ${snapshot.data.data.remitter.name}!");
+                        } else if (snapshot.hasError) {
+                          return Column(
+                            children: <Widget>[
+                              Text(
+                                snapshot.error.toString(),
+                                style: TextStyle(color: Colors.red),
+                              ),
+                              loginButton(),
+                            ],
+                          );
+                        }
+                      }
+
+                      return CircularProgressIndicator();
+                    },
+                  ),
           ),
         ],
       ),
     );
   }
 
+  FlatButton loginButton() {
+    return FlatButton(
+      color: Colors.green,
+      textColor: Colors.limeAccent,
+      disabledColor: Colors.green[100],
+      child: Text("Login"),
+      onPressed: _isEmailValid && _isPasswordValid ? _login : null,
+    );
+  }
+
   void _login() {
-    ApiService.login(LoginRequest(
-            email: _emailController.text, password: _passwordController.text))
-        .then((result) {
-      Scaffold.of(context).showSnackBar(SnackBar(
-        content: Text(result ? "Login success" : "Something went wrong"),
-      ));
+    setState(() {
+      _futureLogin = ApiService.login(LoginRequest(
+          email: _emailController.text, password: _passwordController.text));
     });
   }
 
