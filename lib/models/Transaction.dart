@@ -15,10 +15,15 @@ class TransactionResponse extends Response<List<Transaction>> {
 
 class Transaction {
   final String ref;
+  final double paid;
+  final String type;
 
-  Transaction({this.ref});
+  Transaction({this.ref, this.paid, this.type});
 
   factory Transaction.fromJson(Map<String, dynamic> json) {
-    return Transaction(ref: json['trans_ref']);
+    return Transaction(
+        ref: json['trans_ref'],
+        paid: json['paid_total'],
+        type: json['trans_type']);
   }
 }
