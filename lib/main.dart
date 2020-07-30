@@ -21,13 +21,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.amber,
         ),
-        home: Scaffold(
-          appBar: AppBar(
-            title: Text("Login"),
-          ),
-          resizeToAvoidBottomPadding: true,
-          body: LoginPage(),
-        ),
+        home: LoginPage(),
       ),
     );
   }

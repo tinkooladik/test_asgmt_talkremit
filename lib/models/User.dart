@@ -10,21 +10,44 @@ class UserResponse extends Response<User> {
 }
 
 class User {
-  final Remitter remitter;
+  final _Remitter _remitter;
+  final _Token _token;
 
-  User({this.remitter});
+  String get name {
+    return _remitter._name;
+  }
+
+  String get token {
+    return _token._token;
+  }
+
+  User({_Remitter remitter, _Token token})
+      : _remitter = remitter,
+        _token = token;
 
   factory User.fromJson(Map<String, dynamic> json) {
-    return User(remitter: Remitter.fromJson(json['remitter']));
+    return User(
+        remitter: _Remitter.fromJson(json['remitter']),
+        token: _Token.fromJson(json['token']));
   }
 }
 
-class Remitter {
-  final String name;
+class _Remitter {
+  final String _name;
 
-  Remitter({this.name});
+  _Remitter({String name}) : _name = name;
 
-  factory Remitter.fromJson(Map<String, dynamic> json) {
-    return Remitter(name: json['name']);
+  factory _Remitter.fromJson(Map<String, dynamic> json) {
+    return _Remitter(name: json['name']);
+  }
+}
+
+class _Token {
+  final String _token;
+
+  _Token({String token}) : _token = token;
+
+  factory _Token.fromJson(Map<String, dynamic> json) {
+    return _Token(token: json['token']);
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../models/LoginRequest.dart';
 import '../models/User.dart';
+import '../screens/transactions_screen.dart';
 import '../services/api_service.dart';
 
 class LoginPage extends StatefulWidget {
@@ -20,57 +21,56 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 32),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          TextField(
-            keyboardType: TextInputType.emailAddress,
-            decoration: InputDecoration(
-              labelText: "Email",
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Login"),
+      ),
+      resizeToAvoidBottomPadding: true,
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            TextField(
+              keyboardType: TextInputType.emailAddress,
+              decoration: InputDecoration(
+                labelText: "Email",
+              ),
+              onChanged: _validateEmail,
+              controller: _emailController,
             ),
-            onChanged: _validateEmail,
-            controller: _emailController,
-          ),
-          TextField(
-            keyboardType: TextInputType.text,
-            decoration: InputDecoration(
-              labelText: "Password",
+            TextField(
+              keyboardType: TextInputType.text,
+              decoration: InputDecoration(
+                labelText: "Password",
+              ),
+              obscureText: true,
+              onChanged: _validatePassword,
+              controller: _passwordController,
             ),
-            obscureText: true,
-            onChanged: _validatePassword,
-            controller: _passwordController,
-          ),
-          Container(
-            margin: EdgeInsets.only(top: 16),
-            child: (_futureLogin == null)
-                ? loginButton()
-                : FutureBuilder<UserResponse>(
-                    future: _futureLogin,
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.done) {
-                        if (snapshot.hasData) {
-                          return Text(
-                              "Hi, ${snapshot.data.data.remitter.name}!");
-                        } else if (snapshot.hasError) {
-                          return Column(
-                            children: <Widget>[
-                              Text(
-                                snapshot.error.toString(),
-                                style: TextStyle(color: Colors.red),
-                              ),
-                              loginButton(),
-                            ],
-                          );
+            Container(
+              margin: EdgeInsets.only(top: 16),
+              child: (_futureLogin == null)
+                  ? loginButton()
+                  : FutureBuilder<UserResponse>(
+                      future: _futureLogin,
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.done) {
+                          if (snapshot.hasData) {
+                            _onSuccess(context, snapshot.data);
+                          } else if (snapshot.hasError) {
+                            _onError(context, snapshot.error.toString());
+                          }
+                          _futureLogin = null;
+                          return loginButton();
                         }
-                      }
 
-                      return CircularProgressIndicator();
-                    },
-                  ),
-          ),
-        ],
+                        return CircularProgressIndicator();
+                      },
+                    ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -90,6 +90,21 @@ class _LoginPageState extends State<LoginPage> {
       _futureLogin = ApiService.login(LoginRequest(
           email: _emailController.text, password: _passwordController.text));
     });
+  }
+
+  void _onSuccess(BuildContext context, UserResponse response) {
+    Future.delayed(
+        Duration.zero,
+            () =>
+            Navigator.push(context,
+                MaterialPageRoute(builder: (context) => TransactionsScreen())));
+  }
+
+  void _onError(BuildContext context, String error) {
+    Future.delayed(
+        Duration.zero,
+            () =>
+            Scaffold.of(context).showSnackBar(SnackBar(content: Text(error))));
   }
 
   void _validateEmail(String email) {
