@@ -10,6 +10,7 @@ import '../models/User.dart';
 class ApiService {
   static const String _API_ENDPOINT = "https://test-api.talkremit.com";
 
+  //todo use shared pref for it
   static String token = "";
 
   static Future<UserResponse> login(LoginRequest requestBody) async {

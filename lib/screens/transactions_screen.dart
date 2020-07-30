@@ -45,13 +45,14 @@ class _TransactionsScreenState extends State<TransactionsScreen> {
   }
 
   Widget _successState(List<Transaction> list) {
+    //todo move calculations to some util method
     var total = list.map((t) => t.paid).toList().reduce((a, b) => a + b);
     var avg = total / list.length;
     return Column(children: <Widget>[
       Text("total send transactions amount: $total"),
       Text("average transactions amount: $avg"),
       Container(
-        height: 400,
+        height: 400, //fixme fix size
         child: ListView.builder(
           itemCount: list.length,
           itemBuilder: (ctx, index) => _TransactionItem(
