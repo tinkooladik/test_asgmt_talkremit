@@ -13,5 +13,5 @@ abstract class Response<T> {
     }
   }
 
-  T parseData(Map<String, dynamic> data);
+  T parseData(dynamic data);
 }

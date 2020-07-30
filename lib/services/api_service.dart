@@ -45,8 +45,9 @@ class ApiService {
 
     if (response.statusCode == 200) {
       print("fetch transactions successful");
-      List trns = (json.decode(response.body));
-      return trns.map((t) => Transaction.fromJson(t));
+      TransactionResponse trns =
+          TransactionResponse((json.decode(response.body)));
+      return trns.data;
     }
     throw Exception(json.decode(response.body));
   }

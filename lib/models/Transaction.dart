@@ -1,11 +1,15 @@
 import '../models/Response.dart';
 
-class TransactionResponse extends Response<Transaction> {
+class TransactionResponse extends Response<List<Transaction>> {
   TransactionResponse(Map<String, dynamic> json) : super(json);
 
   @override
-  Transaction parseData(Map<String, dynamic> data) {
-    return Transaction.fromJson(data);
+  List<Transaction> parseData(dynamic data) {
+    return _parseList(data["transactions"]);
+  }
+
+  List<Transaction> _parseList(List data) {
+    return data.map((t) => Transaction.fromJson(t)).toList();
   }
 }
 

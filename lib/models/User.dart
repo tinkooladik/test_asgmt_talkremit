@@ -4,7 +4,7 @@ class UserResponse extends Response<User> {
   UserResponse(Map<String, dynamic> json) : super(json);
 
   @override
-  User parseData(Map<String, dynamic> data) {
+  User parseData(dynamic data) {
     return User.fromJson(data);
   }
 }
